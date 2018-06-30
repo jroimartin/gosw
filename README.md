@@ -1,12 +1,12 @@
 # gosw - Minimalist static website generator
 
-## Install
+## Installation
 
 ```
 go get github.com/jroimartin/gosw
 ```
 
-## Use
+## Usage
 
 ```
 $ cp $GOPATH/src/github.com/jroimartin/gosw/_resources/{config.json,style.css} .
