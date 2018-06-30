@@ -1,4 +1,4 @@
-# gosw - Minimal static website generator
+# gosw - Minimalist static website generator
 
 ## Install
 
