@@ -216,6 +216,6 @@ func fatalf(format string, a ...interface{}) {
 }
 
 func usage() {
-	fmt.Println("usage: gosw indir outdir")
+	fmt.Fprintln(os.Stderr, "usage: gosw indir outdir")
 	flag.PrintDefaults()
 }
