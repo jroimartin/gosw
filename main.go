@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -55,12 +54,12 @@ func main() {
 
 	site, err := readcfg(*cfgfile, *stlfile)
 	if err != nil {
-		log.Fatalf("cannot get configuration: %v", err)
+		fatalf("cannot get configuration: %v\n", err)
 	}
 
 	err = filepath.Walk(indir, buildpage(site, indir, outdir))
 	if err != nil {
-		log.Fatalf("cannot walk tree: %v", err)
+		fatalf("cannot walk tree: %v\n", err)
 	}
 }
 
@@ -98,8 +97,6 @@ func buildpage(site site, indir, outdir string) filepath.WalkFunc {
 		if info.IsDir() {
 			newdir := filepath.Join(outdir, sitepath)
 
-			log.Printf("creating directory %v", newdir)
-
 			if err := os.Mkdir(newdir, 0755); err != nil {
 				return fmt.Errorf("cannot create directory: %v", err)
 			}
@@ -116,8 +113,6 @@ func buildpage(site site, indir, outdir string) filepath.WalkFunc {
 		}
 
 		newpath := filepath.Join(outdir, strings.TrimSuffix(sitepath, filepath.Ext(sitepath))+".html")
-
-		log.Printf("writing file %v", newpath)
 
 		f, err := os.Create(newpath)
 		if err != nil {
@@ -213,6 +208,11 @@ func isBlacklisted(name string, blacklist []string) bool {
 	}
 
 	return false
+}
+
+func fatalf(format string, a ...interface{}) {
+	fmt.Fprintf(os.Stderr, format, a...)
+	os.Exit(1)
 }
 
 func usage() {
