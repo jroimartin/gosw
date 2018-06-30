@@ -1,0 +1,5 @@
+{
+	"Title": "Title of the site",
+	"Subtitle": "Subtitle of the site",
+	"Blacklist": ["images"]
+}
