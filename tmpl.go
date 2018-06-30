@@ -22,7 +22,7 @@ const pageTmpl = `<!doctype html>
 					<li><a class="thisPage" href="{{.Path}}">{{.Name}}</a></li>
 					{{- else}}
 					<li><a href="{{.Path}}">{{.Name}}</a></li>
-					{{end}}
+					{{- end}}
 					{{- end}}
 				</ul>
 			</div>
@@ -31,7 +31,7 @@ const pageTmpl = `<!doctype html>
 			</div>
 		</div>
 		<div id="footer">
-			<span class="right"><a href="https://github.com/jroimartin/gosw">Powered by gosw</a></div>
+			<span class="right"><a href="https://github.com/jroimartin/gosw">Powered by gosw</a></span>
 		</div>
 	</body>
 </html>`
