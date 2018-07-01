@@ -1,5 +1,7 @@
+// See LICENSE file for copyright and license details.
+
 /*
-gosw is a minimalist static website generator
+gosw is a minimalist static website generator.
 
 Usage:
 	gosw indir outdir

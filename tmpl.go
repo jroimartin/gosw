@@ -1,3 +1,5 @@
+// See LICENSE file for copyright and license details.
+
 package main
 
 const pageTmpl = `<!doctype html>
