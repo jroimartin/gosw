@@ -52,17 +52,23 @@ func main() {
 		usage()
 		os.Exit(2)
 	}
-	indir := filepath.Clean(flag.Arg(0))
-	outdir := filepath.Clean(flag.Arg(1))
+
+	indir, err := filepath.Abs(flag.Arg(0))
+	if err != nil {
+		fatalf("input dir error: %v", indir)
+	}
+	outdir, err := filepath.Abs(flag.Arg(1))
+	if err != nil {
+		fatalf("output dir error: %v", outdir)
+	}
 
 	site, err := readcfg(*cfgfile, *stlfile)
 	if err != nil {
-		fatalf("cannot read configuration: %v\n", err)
+		fatalf("configuration error: %v\n", err)
 	}
 
-	err = filepath.Walk(indir, buildpage(site, indir, outdir))
-	if err != nil {
-		fatalf("cannot generate site: %v\n", err)
+	if err := filepath.Walk(indir, buildpage(site, indir, outdir)); err != nil {
+		fatalf("walk error: %v\n", err)
 	}
 }
 
