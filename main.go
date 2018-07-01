@@ -55,11 +55,11 @@ func main() {
 
 	indir, err := filepath.Abs(flag.Arg(0))
 	if err != nil {
-		fatalf("input dir error: %v", indir)
+		fatalf("input dir error: %v\n", indir)
 	}
 	outdir, err := filepath.Abs(flag.Arg(1))
 	if err != nil {
-		fatalf("output dir error: %v", outdir)
+		fatalf("output dir error: %v\n", outdir)
 	}
 
 	site, err := readcfg(*cfgfile, *stlfile)
