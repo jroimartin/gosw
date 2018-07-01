@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -56,28 +57,28 @@ func main() {
 
 	site, err := readcfg(*cfgfile, *stlfile)
 	if err != nil {
-		fatalf("cannot get configuration: %v\n", err)
+		fatalf("cannot read configuration: %v\n", err)
 	}
 
 	err = filepath.Walk(indir, buildpage(site, indir, outdir))
 	if err != nil {
-		fatalf("cannot walk tree: %v\n", err)
+		fatalf("cannot generate site: %v\n", err)
 	}
 }
 
 func readcfg(cfgfile, stlfile string) (site, error) {
 	stldata, err := ioutil.ReadFile(stlfile)
 	if err != nil {
-		return site{}, fmt.Errorf("cannot read style file: %v", err)
+		return site{}, err
 	}
 	cfgdata, err := ioutil.ReadFile(cfgfile)
 	if err != nil {
-		return site{}, fmt.Errorf("cannot read config file: %v", err)
+		return site{}, err
 	}
 
 	var cfg config
 	if err := json.Unmarshal(cfgdata, &cfg); err != nil {
-		return site{}, fmt.Errorf("cannot parse config: %v", err)
+		return site{}, err
 	}
 
 	s := site{
@@ -91,49 +92,62 @@ func readcfg(cfgfile, stlfile string) (site, error) {
 func buildpage(site site, indir, outdir string) filepath.WalkFunc {
 	return func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			return fmt.Errorf("cannot walk tree: %v", err)
+			return err
 		}
 
 		sitepath := strings.TrimPrefix(path, indir)
 
+		// Create directory
 		if info.IsDir() {
-			newdir := filepath.Join(outdir, sitepath)
-
-			if err := os.Mkdir(newdir, 0755); err != nil {
-				return fmt.Errorf("cannot create directory: %v", err)
-			}
-			return nil
+			dst := filepath.Join(outdir, sitepath)
+			return os.MkdirAll(dst, 0755)
 		}
 
+		// Copy non-md file
 		if filepath.Ext(path) != ".md" {
-			return nil
+			dst := filepath.Join(outdir, sitepath)
+			return copyFile(dst, path)
 		}
 
+		// Render md file into html
 		page, err := parsepage(site, indir, sitepath)
 		if err != nil {
-			return fmt.Errorf("cannot parse page: %v", err)
+			return err
 		}
 
-		newpath := filepath.Join(outdir, strings.TrimSuffix(sitepath, filepath.Ext(sitepath))+".html")
+		dst := filepath.Join(outdir, strings.TrimSuffix(sitepath, filepath.Ext(sitepath))+".html")
 
-		f, err := os.Create(newpath)
+		f, err := os.Create(dst)
 		if err != nil {
-			return fmt.Errorf("cannot open output file: %v", err)
+			return err
 		}
 		defer f.Close()
 
-		if err := tmpl.Execute(f, page); err != nil {
-			return fmt.Errorf("cannot execute template: %v", err)
-		}
-
-		return nil
+		return tmpl.Execute(f, page)
 	}
+}
+
+func copyFile(dst, src string) error {
+	fsrc, err := os.Open(src)
+	if err != err {
+		return err
+	}
+	defer fsrc.Close()
+
+	fdst, err := os.Create(dst)
+	if err != err {
+		return err
+	}
+	defer fdst.Close()
+
+	_, err = io.Copy(fdst, fsrc)
+	return err
 }
 
 func parsepage(site site, indir, sitepath string) (page, error) {
 	b, err := ioutil.ReadFile(filepath.Join(indir, sitepath))
 	if err != nil {
-		return page{}, fmt.Errorf("cannot read file: %v", err)
+		return page{}, err
 	}
 	body := blackfriday.Run(b)
 
@@ -146,7 +160,7 @@ func parsepage(site site, indir, sitepath string) (page, error) {
 
 	nav, err := buildNav(site, indir, sitepath)
 	if err != nil {
-		return page{}, fmt.Errorf("cannot build nav: %v", err)
+		return page{}, err
 	}
 
 	page := page{
@@ -172,7 +186,7 @@ func buildNav(site site, indir, sitepath string) ([]item, error) {
 	d := filepath.Dir(filepath.Join(indir, sitepath))
 	files, err := ioutil.ReadDir(d)
 	if err != nil {
-		return nil, fmt.Errorf("cannot read directory: %v", err)
+		return nil, err
 	}
 
 	for _, f := range files {
