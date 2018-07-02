@@ -162,7 +162,7 @@ func parsepage(site site, indir, sitepath string) (page, error) {
 
 	indexPath := "index.html"
 	if sitedir != "/" {
-		indexPath = strings.Repeat("../", strings.Count(sitedir, "/")) + "index.html"
+		indexPath = path.Join(strings.Repeat("../", strings.Count(sitedir, "/")), "index.html")
 	}
 
 	nav, err := buildNav(site, indir, sitepath)
