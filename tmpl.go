@@ -21,9 +21,9 @@ const pageTmpl = `<!doctype html>
 				<ul>
 					{{- range .Nav}}
 					{{- if .This}}
-					<li><a class="thisPage" href="{{.Path}}">{{.Name}}</a></li>
+					<li><a class="thisPage" href="{{.Link}}">{{.Text}}</a></li>
 					{{- else}}
-					<li><a href="{{.Path}}">{{.Name}}</a></li>
+					<li><a href="{{.Link}}">{{.Text}}</a></li>
 					{{- end}}
 					{{- end}}
 				</ul>

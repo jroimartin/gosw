@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -35,8 +36,8 @@ type page struct {
 }
 
 type item struct {
-	Name string
-	Path string
+	Text string
+	Link string
 	This bool
 }
 
@@ -203,16 +204,16 @@ func buildNav(site site, indir, sitepath string) ([]item, error) {
 			continue
 		}
 
-		var path string
+		var link string
 		if f.IsDir() {
-			path = filepath.Join(name, "index.html")
+			link = path.Join(name, "index.html")
 		} else {
-			path = name + ".html"
+			link = name + ".html"
 		}
-		repr := strings.Replace(name, "_", " ", -1)
+		text := strings.Replace(name, "_", " ", -1)
 		this := filepath.Base(sitepath) == filename
 
-		nav = append(nav, item{repr, path, this})
+		nav = append(nav, item{text, link, this})
 	}
 
 	return nav, nil
