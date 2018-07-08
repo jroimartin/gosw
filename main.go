@@ -122,7 +122,8 @@ func buildpage(site site, indir, outdir string) filepath.WalkFunc {
 			return err
 		}
 
-		dst := filepath.Join(outdir, strings.TrimSuffix(sitepath, filepath.Ext(sitepath))+".html")
+		htmlpath := strings.TrimSuffix(sitepath, filepath.Ext(sitepath)) + ".html"
+		dst := filepath.Join(outdir, htmlpath)
 
 		f, err := os.Create(dst)
 		if err != nil {
@@ -161,8 +162,9 @@ func parsepage(site site, indir, sitepath string) (page, error) {
 	sitedir := filepath.Dir(sitepath)
 
 	indexPath := "index.html"
-	if sitedir != "/" {
-		indexPath = path.Join(strings.Repeat("../", strings.Count(sitedir, "/")), "index.html")
+	if sitedir != string(filepath.Separator) {
+		n := strings.Count(sitedir, string(filepath.Separator))
+		indexPath = path.Join(strings.Repeat("../", n), "index.html")
 	}
 
 	nav, err := buildNav(site, indir, sitepath)
@@ -186,7 +188,7 @@ func buildNav(site site, indir, sitepath string) ([]item, error) {
 	if filepath.Base(sitepath) != "index.md" {
 		nav = append(nav, item{".", "index.html", false})
 	}
-	if filepath.Dir(sitepath) != "/" {
+	if filepath.Dir(sitepath) != string(filepath.Separator) {
 		nav = append(nav, item{"..", "../index.html", false})
 	}
 
