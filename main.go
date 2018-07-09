@@ -54,7 +54,6 @@ func main() {
 
 	if flag.NArg() != 2 {
 		usage()
-		os.Exit(2)
 	}
 
 	indir, err := filepath.Abs(flag.Arg(0))
@@ -241,4 +240,5 @@ func isBlacklisted(name string, blacklist []string) bool {
 func usage() {
 	fmt.Fprintln(os.Stderr, "usage: gosw indir outdir")
 	flag.PrintDefaults()
+	os.Exit(2)
 }
