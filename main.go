@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -44,6 +45,8 @@ type item struct {
 var tmpl = template.Must(template.New("page").Parse(pageTmpl))
 
 func main() {
+	log.SetFlags(0)
+
 	cfgfile := flag.String("config", "config.json", "config file")
 	stlfile := flag.String("style", "style.css", "CSS file")
 	flag.Usage = usage
@@ -56,20 +59,20 @@ func main() {
 
 	indir, err := filepath.Abs(flag.Arg(0))
 	if err != nil {
-		fatalf("input dir error: %v\n", indir)
+		log.Fatalf("input dir error: %v\n", indir)
 	}
 	outdir, err := filepath.Abs(flag.Arg(1))
 	if err != nil {
-		fatalf("output dir error: %v\n", outdir)
+		log.Fatalf("output dir error: %v\n", outdir)
 	}
 
 	site, err := readcfg(*cfgfile, *stlfile)
 	if err != nil {
-		fatalf("configuration error: %v\n", err)
+		log.Fatalf("configuration error: %v\n", err)
 	}
 
 	if err := filepath.Walk(indir, buildpage(site, indir, outdir)); err != nil {
-		fatalf("walk error: %v\n", err)
+		log.Fatalf("walk error: %v\n", err)
 	}
 }
 
@@ -233,11 +236,6 @@ func isBlacklisted(name string, blacklist []string) bool {
 	}
 
 	return false
-}
-
-func fatalf(format string, a ...interface{}) {
-	fmt.Fprintf(os.Stderr, format, a...)
-	os.Exit(1)
 }
 
 func usage() {
