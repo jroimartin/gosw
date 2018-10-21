@@ -65,17 +65,17 @@ func main() {
 		log.Fatalf("output dir error: %v\n", outdir)
 	}
 
-	site, err := readcfg(*cfgfile, *stlfile)
+	site, err := readCfg(*cfgfile, *stlfile)
 	if err != nil {
 		log.Fatalf("configuration error: %v\n", err)
 	}
 
-	if err := filepath.Walk(indir, buildpage(site, indir, outdir)); err != nil {
+	if err := filepath.Walk(indir, buildPage(site, indir, outdir)); err != nil {
 		log.Fatalf("walk error: %v\n", err)
 	}
 }
 
-func readcfg(cfgfile, stlfile string) (site, error) {
+func readCfg(cfgfile, stlfile string) (site, error) {
 	stldata, err := ioutil.ReadFile(stlfile)
 	if err != nil {
 		return site{}, err
@@ -98,7 +98,7 @@ func readcfg(cfgfile, stlfile string) (site, error) {
 	return s, nil
 }
 
-func buildpage(site site, indir, outdir string) filepath.WalkFunc {
+func buildPage(site site, indir, outdir string) filepath.WalkFunc {
 	return func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -119,7 +119,7 @@ func buildpage(site site, indir, outdir string) filepath.WalkFunc {
 		}
 
 		// Render md file into html
-		page, err := parsepage(site, indir, sitepath)
+		page, err := parsePage(site, indir, sitepath)
 		if err != nil {
 			return err
 		}
@@ -154,7 +154,7 @@ func copyFile(dst, src string) error {
 	return err
 }
 
-func parsepage(site site, indir, sitepath string) (page, error) {
+func parsePage(site site, indir, sitepath string) (page, error) {
 	b, err := ioutil.ReadFile(filepath.Join(indir, sitepath))
 	if err != nil {
 		return page{}, err
